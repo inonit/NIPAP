@@ -14,7 +14,7 @@ psycopg2==2.7.1
 pyparsing==2.2.0
 python-dateutil==2.6.0
 # optional dependency on ldap
-#python-ldap==2.4.19
+python-ldap==2.4.19
 pytz==2017.2
 pysqlite==2.8.3
 tornado==4.5.1

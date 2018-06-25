@@ -88,6 +88,21 @@ db_pass = {{DB_PASSWORD}}       ; database password
 db_sslmode = {{DB_SSLMODE}}     ; database SSL mode
 # please see the PostgreSQL database documentation for further details
 
+#
+# Options for the WWW UI
+# ----------------------
+#
+[www]
+xmlrpc_uri = http://{{NIPAPD_USERNAME}}:{{NIPAPD_PASSWORD}}@{{NIPAPD_HOST}}:{{NIPAPD_PORT}}
+#connection uri to the backend
+#example using local authentication with username 'user' and password 'pass'
+#xmlrpc_uri = http://user@local:pass@127.0.0.1:1337
+
+# welcome_message allows the display of a custom message on the login page of
+# the web interface, it might contain hints about what credentials to use or
+# just greet the user.
+#welcome_message = Welcome to NIPAP at COMPANY. Please login using your XYZ credentials.
+
 
 
 #
@@ -95,26 +110,20 @@ db_sslmode = {{DB_SSLMODE}}     ; database SSL mode
 # --------------------------------------------
 #
 [auth]
-default_backend = local                ; which backend to use by default
+default_backend = ldap                ; which backend to use by default
 auth_cache_timeout = 3600              ; seconds cached auth entries are stored
 
-# example backend with SQLite
-[auth.backends.local]
-type = SqliteAuth
-
-db_path = /etc/nipap/local_auth.db     ; path to SQLite database used
-
 # example backend for LDAP
-#[auth.backends.ldap1]
-#type = LdapAuth
+[auth.backends.ldap]
+type = LdapAuth
 #
-#basedn = ou=Users,dc=example,dc=com       ; base DN
-#uri = ldaps://ldap.example.com            ; LDAP server URI
-#tls = False                            ; initiate TLS, use ldap://
+basedn = ou=People,dc=aws,dc=inonit,dc=no       ; base DN
+uri = ldaps://puppet.inonit.no            ; LDAP server URI
+tls = False                            ; initiate TLS, use ldap://
 #
 # LDAP style
-#binddn_fmt = uid={},ou=Users,dc=example,dc=com
-#search = uid={}                        ; LDAP search filter
+binddn_fmt = uid={},ou=People,dc=aws,dc=inonit,dc=no
+search = uid={}                        ; LDAP search filter
 #
 # Active Directory (UPN) style
 #binddn_fmt = {}@example.com
@@ -137,51 +146,3 @@ db_path = /etc/nipap/local_auth.db     ; path to SQLite database used
 # created in LDAP for NIPAP that has sufficient privileges to read the "cn" and
 # "memberOf" attribute.
 #search_binddn = uid=foo,ou=Users,dc=example,dc=com
-#search_password = secret
-#
-## Group permissions
-# Group permissions enables granting read-write or read-only privileges based
-# on a users group membership in LDAP.
-#
-# Non-empty values for rw_group/ro_group requires the memberOf attribute to be
-# present in LDAP. For OpenLDAP this requires a "memberof" overlay.
-#
-# Note how certain LDAP servers are case-sensitive on DN-specification, e.g.
-# "DC=example,DC=com" works while "dc=example,dc=com" does not or vice versa.
-#
-# Examples:
-#
-# Everyone with an account can login and gets read/write access:
-#rw_group =
-#ro_group =
-#
-# Users specified by rw_group, i.e. 'tech', gets read/write access, everyone
-# else gets read only access:
-#rw_group = cn=tech,dc=example,dc=com      ; Users in this group get rw access
-#ro_group =
-#
-# Users specified by rw_group, i.e. 'tech', gets read/write access, users
-# specified by ro_group, i.e. 'staff', get read only access. You need to be in
-# either group to authenticate at all:
-#rw_group = cn=tech,dc=example,dc=com      ; Users in this group get rw access
-#ro_group = cn=staff,dc=example,dc=com     ; Users in this group get ro access
-#
-# Users get read/write access by default, users specified by ro_group, i.e.
-# 'untrusted', gets read only access:
-#rw_group =
-#ro_group = cn=untrusted,dc=example,dc=com ; Users in this group get ro access
-
-#
-# Options for the WWW UI
-# ----------------------
-#
-[www]
-xmlrpc_uri = http://{{NIPAPD_USERNAME}}:{{NIPAPD_PASSWORD}}@{{NIPAPD_HOST}}:{{NIPAPD_PORT}}
-#connection uri to the backend
-#example using local authentication with username 'user' and password 'pass'
-#xmlrpc_uri = http://user@local:pass@127.0.0.1:1337
-
-# welcome_message allows the display of a custom message on the login page of
-# the web interface, it might contain hints about what credentials to use or
-# just greet the user.
-#welcome_message = Welcome to NIPAP at COMPANY. Please login using your XYZ credentials.
