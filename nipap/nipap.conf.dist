@@ -88,6 +88,7 @@ db_pass = {{DB_PASSWORD}}       ; database password
 db_sslmode = {{DB_SSLMODE}}     ; database SSL mode
 # please see the PostgreSQL database documentation for further details
 
+
 #
 # Options for the WWW UI
 # ----------------------
@@ -113,36 +114,24 @@ xmlrpc_uri = http://{{NIPAPD_USERNAME}}:{{NIPAPD_PASSWORD}}@{{NIPAPD_HOST}}:{{NI
 default_backend = ldap                ; which backend to use by default
 auth_cache_timeout = 3600              ; seconds cached auth entries are stored
 
+# example backend with SQLite
+[auth.backends.local]
+type = SqliteAuth
+
+db_path = /etc/nipap/local_auth.db     ; path to SQLite database used
+
 # example backend for LDAP
 [auth.backends.ldap]
 type = LdapAuth
 #
-basedn = ou=People,dc=aws,dc=inonit,dc=no       ; base DN
+basedn = dc=aws,dc=inonit,dc=no       ; base DN
 uri = ldaps://puppet.inonit.no            ; LDAP server URI
 tls = False                            ; initiate TLS, use ldap://
 #
 # LDAP style
 binddn_fmt = uid={},ou=People,dc=aws,dc=inonit,dc=no
-search = uid={}                        ; LDAP search filter
-#
-# Active Directory (UPN) style
-#binddn_fmt = {}@example.com
-#search = sAMAccountName={}
-#
-# {} in binddn_fmt is replaced by the username of the authenticating user.
-#
-## Secondary LDAP connection
-# Normally a bind to the LDAP server is performed using the credentials of the
-# user that is trying to login. A successful bind means that the user has the
-# correct credentials. This LDAP connection is then used to perform a search
-# query fetching the full name ("cn") and potentially the group membership of
-# the user ("memberOf").
-#
-# Depending on the access control configuration of the LDAP server, users may
-# or may not have privileges to perform this search. The following two options,
-# search_binddn and search_password, can be used to create a second LDAP
-# connection that is used to fetch the full name and group memberships in case
-# the user doesn't have sufficient privileges. A second user needs to be
-# created in LDAP for NIPAP that has sufficient privileges to read the "cn" and
-# "memberOf" attribute.
-#search_binddn = uid=foo,ou=Users,dc=example,dc=com
+search = (|(uid={})(objectClass=shadowAccount))
+
+# Groups
+rw_group = cn=primafon_admins,ou=Group,dc=aws,dc=inonit,dc=no
+ro_group = cn=primafon,ou=Group,dc=aws,dc=inonit,dc=no

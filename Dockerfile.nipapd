@@ -33,7 +33,8 @@
 #
 
 FROM ubuntu:xenial
-MAINTAINER Kristian Larsson <kristian@spritelink.net>
+MAINTAINER Lars Bahner <lares.bahner@gmail.com>
+# Built from https://github.com/SpriteLink/NIPAP
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -41,7 +42,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qy && apt-get upgrade -qy \
  && apt-get install -qy devscripts \
     make \
+    libldap2-dev \
     libpq-dev \
+    libsasl2-dev \
     libsqlite3-dev \
     postgresql-client \
     python \
@@ -49,13 +52,14 @@ RUN apt-get update -qy && apt-get upgrade -qy \
     python-docutils \
     python-pip \
     python-dev \
- && pip --no-input install envtpl \
+ && pip install --upgrade pip \
+ && /usr/local/bin/pip --no-input install envtpl \
  && rm -rf /var/lib/apt/lists/*
 
 
 COPY nipap /nipap
 WORKDIR /nipap
-RUN pip --no-input install -r requirements.txt \
+RUN /usr/local/bin/pip --no-input install -r requirements.txt \
  && python setup.py install
 
 EXPOSE 1337
